@@ -1,7 +1,7 @@
-# Title: stl-validator
+# Title: stl-metadata-extractor
 # Version: 1.0.0
 # Publisher: NFDI4Culture
-# Publication date: 2024, May 21th
+# Publication date: December 5, 2024
 # License: CC BY 4.0
 # Author: Joerg Heseler
 # References: https://www.fabbers.com/tech/STL_Format#Sct_specs
