@@ -12,7 +12,7 @@ To install this script, follow these steps:
 - Fill in the following fields:
   - **The related tool**: Select **Archivematica Script**.
   - **Description**: Enter `Characterize using stl-metadata-extractor`.
-  - **Command**: Paste the entire content of the [**gltf-metadata-extractor.py**](./src/stl-metadata-extractor.py) file.
+  - **Command**: Paste the entire content of the [**stl-metadata-extractor.py**](./src/stl-metadata-extractor.py) file.
   - **Script type**: Select **Python script**.
   - **The related output format**: Select **Text (Markup): XML: XML (fmt/101)**.
   - **Command usage**: Select **Characterization**.
