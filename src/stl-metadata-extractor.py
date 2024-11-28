@@ -251,7 +251,7 @@ def main(target):
             )
         )
 
-        print(f"totalVertexCount: {total_facet_count * 3}")  
+        # print(f"totalVertexCount: {total_facet_count * 3}")  
         print(f"totalTriangleCount: {total_facet_count}")
         print(f"allVerticesOfFacetsAreOrderedClockwise: {all_vertices_of_facets_are_ordered_clockwise}")
         print(f"allFacetNormalsAreCorrect: {all_facets_normals_are_correct}")
