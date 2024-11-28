@@ -4,7 +4,58 @@ This repository provides a script that extracts metadata from STL files in [Arch
 
 ## Installation
 
-...
+To install this script, follow these steps:
+
+### 1. Create a new characterization command
+
+- In the Archivematica frontend, navigate to **Preservation planning** > **Characterization** > **Commands** > **Create new command** or go directly to [this link](http://10.10.10.20/fpr/fpcommand/create/).
+- Fill in the following fields:
+  - **The related tool**: Select **Archivematica Script**.
+  - **Description**: Enter `Characterize using stl-metadata-extractor`.
+  - **Command**: Paste the entire content of the [**gltf-metadata-extractor.py**](./src/stl-metadata-extractor.py) file.
+  - **Script type**: Select **Python script**.
+  - **The related output format**: Select **Text (Markup): XML: XML (fmt/101)**.
+  - **Command usage**: Select **Characterization**.
+  - Leave all other input fields and combo boxes untouched.
+- Click **Save**.
+
+### 2. Create a new characterization rule for ASCII based STL
+
+- In the Archivematica frontend, navigate to **Preservation planning** > **Characterization** > **Rules** > **Create new rule** or go directly to [this link](http://10.10.10.20/fpr/fprule/create/).
+- Fill in the following fields:
+  - **Purpose**: Select **Characterization**.
+  - **The related format**: Select **Text (Source Code): STL (Standard Tessellation Language) ASCII: STL (x-fmt/108)**.
+  - **Command**: Select **Characterize using stl-metadata-extractor**.
+- Click **Save**.
+
+## Test
+
+To test this metadata exctractor, you can use the sample STL files located [here](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/tree/main/stl).
+
+You can view the error codes and detailed characterization results in the Archivmatica frontend after starting a transfer by expanding the `▸ Microservice: Characterize and extract metadata` section and clicking on the gear icon of `Microservice: Characterize and extract metadata`.
+
+Valid files should pass characterization with this script and return error code **0**. However, files containing errors should fail characterization and either return error code **1** or **255**.
+
+### Example
+
+If you use this script to characterize the ASCII STL model [`cube-stl-ascii-valid.stl`](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/blob/main/stl/cube-stl-ascii-valid.stl), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
+
+```xml
+<?xml version="1.0" ?>
+<STLMetadataExtractor xmlns="http://nfdi4culture.de/stl-metadata-extractor1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd">
+    <formatName>STL</formatName>
+    <size>123456</size>
+    <SHA256Checksum>b69c34f30ec2803a37c6546c890a202f4db618745a3fefa3e5ac360bff211931</SHA256Checksum>
+    <creationDate>2024-11-22T12:43:51.786020</creationDate>
+    <modificationDate>2023-05-31T10:26:56</modificationDate>
+    <totalTriangleCount>12</totalTriangleCount>
+    <allVerticesOfFacetsAreOrderedClockwise>true</allVerticesOfFacetsAreOrderedClockwise>
+    <allFacetNormalsAreCorrect>true</allFacetNormalsAreCorrect>
+    <hasIsolatedTriangle>false</hasIsolatedTriangle>
+    <hasName>false</hasName>
+    <allVertexCoordinatesAreGreaterThanZero>false</allVertexCoordinatesAreGreaterThanZero>
+</STLMetadataExtractor>
+```
 
 ## Dependencies
 
