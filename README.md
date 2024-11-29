@@ -44,16 +44,16 @@ If you use this script to characterize the ASCII STL model [`cube-stl-ascii-vali
 <?xml version="1.0" ?>
 <STLMetadataExtractor xmlns="http://nfdi4culture.de/stl-metadata-extractor1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd">
     <formatName>STL</formatName>
-    <size>123456</size>
-    <SHA256Checksum>b69c34f30ec2803a37c6546c890a202f4db618745a3fefa3e5ac360bff211931</SHA256Checksum>
-    <creationDate>2024-11-22T12:43:51.786020</creationDate>
-    <modificationDate>2023-05-31T10:26:56</modificationDate>
+    <size>2257</size>
+    <SHA256Checksum>3c15500f2e7731d605d90621461edfe43415acb4b9a811d4df759a0e5d88fe0f</SHA256Checksum>
+    <creationDate>2024-01-20T15:44:26.894060</creationDate>
+    <modificationDate>2024-01-20T15:44:26.896803</modificationDate>
     <totalTriangleCount>12</totalTriangleCount>
     <allVerticesOfFacetsAreOrderedClockwise>true</allVerticesOfFacetsAreOrderedClockwise>
     <allFacetNormalsAreCorrect>true</allFacetNormalsAreCorrect>
     <hasIsolatedTriangle>false</hasIsolatedTriangle>
-    <hasName>false</hasName>
     <hasNegativeVertexCoordinates>true</hasNegativeVertexCoordinates>
+    <hasName>true</hasName>
 </STLMetadataExtractor>
 ```
 
