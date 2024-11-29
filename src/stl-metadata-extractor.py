@@ -275,16 +275,15 @@ def extract_stl_metadata(file_path):
 
         # Create XML tree with namespace and schema location
         ET.register_namespace('', "http://nfdi4culture.de/stl-metadata-extractor1") # Register default namespace
-        root = ET.Element('GLTFMetadataExtractor', {
+        root = ET.Element('STLMetadataExtractor', {
             'xmlns': "http://nfdi4culture.de/stl-metadata-extractor1",
             'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
             'xsi:schemaLocation': "http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd"
         })
 
         # Create XML tree
-        #root = ET.Element('GLTFMetadataExtractor')
-        ET.SubElement(root, 'formatName').text = 'GLTF'
-        # ET.SubElement(root, 'formatVersion').text = gltf_json_output['info']['version']
+        ET.SubElement(root, 'formatName').text = 'STL'
+        # ET.SubElement(root, 'formatVersion').text = ?
         ET.SubElement(root, 'size').text = str(file_size)
         ET.SubElement(root, 'SHA256Checksum').text = checksum
         ET.SubElement(root, 'creationDate').text = creation_date
