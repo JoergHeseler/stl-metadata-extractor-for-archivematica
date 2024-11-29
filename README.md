@@ -1,4 +1,4 @@
-# ⚠️ Warning: Experimental Project ⚠️<br><br>STL Metadata Extractor for Archivematica
+# STL Metadata Extractor for Archivematica
 
 This repository provides a script that extracts metadata from STL files in [Archivematica](https://www.archivematica.org/).
 
