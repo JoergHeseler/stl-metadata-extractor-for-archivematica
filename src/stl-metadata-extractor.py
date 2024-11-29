@@ -194,7 +194,7 @@ def extract_stl_metadata(file_path):
         # brace brackets can be repeated none, one or more times, to support
         # empty scenes as many programs are able to export.
 
-        all_vertex_coordinates_are_greater_than_zero = True
+        has_negative_vertex_coordinates = False
         all_facets_normals_are_correct = True
         all_vertices_of_facets_are_ordered_clockwise = True
         total_facet_count = int((len(lines) - 2) / 7)
@@ -226,7 +226,7 @@ def extract_stl_metadata(file_path):
                 parts = lines[y].split(' ')
                 vertex = np.array(list(map(float, parts[1:])))
                 if vertex[0] < 0 or vertex[1] < 0 or vertex[2] < 0:
-                    all_vertex_coordinates_are_greater_than_zero = False                
+                    has_negative_vertex_coordinates = True                
                 vertices += [vertex]
                 y += 1
 
@@ -295,7 +295,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'allVerticesOfFacetsAreOrderedClockwise').text = str(all_vertices_of_facets_are_ordered_clockwise).lower()
         ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
         ET.SubElement(root, 'hasIsolatedTriangle').text = str(has_isolated_triangle(triangles)).lower()
-        ET.SubElement(root, 'allVertexCoordinatesAreGreaterThanZero').text = str(all_vertex_coordinates_are_greater_than_zero).lower()
+        ET.SubElement(root, 'hasNegativeVertexCoordinates').text = str(has_negative_vertex_coordinates).lower()
         ET.SubElement(root, 'hasName').text = str(name and len(name.strip()) > 0).lower()
 
 
