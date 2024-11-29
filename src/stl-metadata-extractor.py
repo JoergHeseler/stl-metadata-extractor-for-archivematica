@@ -183,9 +183,9 @@ def extract_stl_metadata(file_path):
             print_error(y, "solid", lines[y])     
         if not re.search(f"^solid [^\n]+$", lines[y]):
             print_warning(y, "solid <string>", lines[y])
-            name = ""
+            model_name = ""
         else:
-            name = str(lines[y][6:]).lstrip()
+            model_name = str(lines[y][6:]).lstrip()
         y += 1
         
         # The notation, “{…}+,” means that the contents of the brace brackets
@@ -252,9 +252,9 @@ def extract_stl_metadata(file_path):
             y += 1
         if not re.search("^endsolid", lines[y]):
             print_error(y, "endsolid", lines[y])
-        if name != "":
-            if not f"endsolid {name}" == lines[y]:
-                print_error(y, f"endsolid {name}", lines[y])
+        if model_name != "":
+            if not f"endsolid {model_name}" == lines[y]:
+                print_error(y, f"endsolid {model_name}", lines[y])
         y += 1
 
         
@@ -295,7 +295,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
         ET.SubElement(root, 'hasIsolatedTriangle').text = str(has_isolated_triangle(triangles)).lower()
         ET.SubElement(root, 'hasNegativeVertexCoordinates').text = str(has_negative_vertex_coordinates).lower()
-        ET.SubElement(root, 'hasName').text = str(name and len(name.strip()) > 0).lower()
+        ET.SubElement(root, 'hasName').text = str(model_name and len(model_name.strip()) > 0).lower()
 
 
         # Convert ElementTree to minidom document for CDATA support
