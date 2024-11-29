@@ -8,10 +8,13 @@
 
 
 from __future__ import print_function
+import hashlib
 import json
-import subprocess
+import os
+from datetime import datetime
 import sys
-from lxml import etree
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 import re
 import math
 import numpy as np
@@ -20,6 +23,25 @@ import numpy as np
 SUCCESS_CODE = 0
 ERROR_CODE = 1
 DEBUG = 1
+
+def get_target_file_name_from_arguments():
+    target = None
+    for arg in sys.argv:
+        if arg.startswith("--file-full-name="):
+            # Extract the part after the equals sign
+            target = arg.split("=", 1)[1]
+            break
+    return target
+
+def calculate_checksum(file_path, algorithm='sha256'):
+    hash_func = hashlib.new(algorithm)
+    with open(file_path, 'rb') as f:
+        while True:
+            chunk = f.read(8192)
+            if not chunk:
+                break
+            hash_func.update(chunk)
+    return hash_func.hexdigest()
 
 
 def dot_product(v1, v2):
@@ -149,9 +171,9 @@ def format_event_outcome_detail_note(format, version, result):
 
     return note
 
-def main(target):
+def extract_stl_metadata(file_path):
     try:
-        with open(target, 'r') as file:
+        with open(file_path, 'r') as file:
             lines = file.readlines()
                                  
         lines = [line.strip() for line in lines]
@@ -172,6 +194,7 @@ def main(target):
         # brace brackets can be repeated none, one or more times, to support
         # empty scenes as many programs are able to export.
 
+        all_vertex_coordinates_are_greater_than_zero = True
         all_facets_normals_are_correct = True
         all_vertices_of_facets_are_ordered_clockwise = True
         total_facet_count = int((len(lines) - 2) / 7)
@@ -201,7 +224,10 @@ def main(target):
                 if not re.search(f"^vertex -?\d*(\.\d+)?([Ee][+-]?\d+)? -?\d*(\.\d+)?([Ee][+-]?\d+)? -?\d*(\.\d+)?([Ee][+-]?\d+)?$", lines[y]):
                     print_error(y, "vertex <unsigned float> <unsigned float> <unsigned float>", lines[y])
                 parts = lines[y].split(' ')
-                vertices += [np.array(list(map(float, parts[1:])))]
+                vertex = np.array(list(map(float, parts[1:])))
+                if vertex[0] < 0 or vertex[1] < 0 or vertex[2] < 0:
+                    all_vertex_coordinates_are_greater_than_zero = False                
+                vertices += [vertex]
                 y += 1
 
             triangles += [vertices]
@@ -241,21 +267,44 @@ def main(target):
         
         note = format_event_outcome_detail_note(format, version, f"errors: {errors_count}, warnings: {warning_count}")
 
-        print(
-            json.dumps(
-                {
-                    "eventOutcomeInformation": "pass",
-                    "eventOutcomeDetailNote": note,
-                    "stdout": target + " validates.",
-                }
-            )
-        )
+        # File metadata
+        file_size = os.path.getsize(file_path)
+        creation_date = datetime.utcfromtimestamp(os.path.getctime(file_path)).isoformat()
+        modification_date = datetime.utcfromtimestamp(os.path.getmtime(file_path)).isoformat()
+        checksum = calculate_checksum(file_path)
 
-        # print(f"totalVertexCount: {total_facet_count * 3}")  
-        print(f"totalTriangleCount: {total_facet_count}")
-        print(f"allVerticesOfFacetsAreOrderedClockwise: {all_vertices_of_facets_are_ordered_clockwise}")
-        print(f"allFacetNormalsAreCorrect: {all_facets_normals_are_correct}")
-        print(f"hasIsolatedTriangle: {has_isolated_triangle(triangles)}")
+        # Create XML tree with namespace and schema location
+        ET.register_namespace('', "http://nfdi4culture.de/stl-metadata-extractor1") # Register default namespace
+        root = ET.Element('GLTFMetadataExtractor', {
+            'xmlns': "http://nfdi4culture.de/stl-metadata-extractor1",
+            'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
+            'xsi:schemaLocation': "http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd"
+        })
+
+        # Create XML tree
+        #root = ET.Element('GLTFMetadataExtractor')
+        ET.SubElement(root, 'formatName').text = 'GLTF'
+        # ET.SubElement(root, 'formatVersion').text = gltf_json_output['info']['version']
+        ET.SubElement(root, 'size').text = str(file_size)
+        ET.SubElement(root, 'SHA256Checksum').text = checksum
+        ET.SubElement(root, 'creationDate').text = creation_date
+        ET.SubElement(root, 'modificationDate').text = modification_date
+        # Technical metadata
+        ET.SubElement(root, 'totalTriangleCount').text = str(total_facet_count)
+        # Validation specific metadata
+        ET.SubElement(root, 'allVerticesOfFacetsAreOrderedClockwise').text = str(all_vertices_of_facets_are_ordered_clockwise).lower()
+        ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
+        ET.SubElement(root, 'hasIsolatedTriangle').text = str(has_isolated_triangle(triangles)).lower()
+        ET.SubElement(root, 'allVertexCoordinatesAreGreaterThanZero').text = str(all_vertex_coordinates_are_greater_than_zero).lower()
+        ET.SubElement(root, 'hasName').text = str(name and len(name.strip()) > 0).lower()
+
+
+        # Convert ElementTree to minidom document for CDATA support
+        xml_str = ET.tostring(root, encoding='utf-8')
+        dom = minidom.parseString(xml_str)
+        
+        # Print formatted XML with CDATA
+        print(dom.toprettyxml(indent="    "))
         return SUCCESS_CODE
     except STLValidatorException as e:
         print(
@@ -270,6 +319,11 @@ def main(target):
         )
         return ERROR_CODE
 
-if __name__ == "__main__":
-    target = sys.argv[1]
-    sys.exit(main(target))
+
+if __name__ == '__main__':
+# Main
+    target = get_target_file_name_from_arguments()
+    if not target:
+        print("No argument with --file-full-name= found.", file=sys.stderr)
+    else:
+        sys.exit(extract_stl_metadata(target))
