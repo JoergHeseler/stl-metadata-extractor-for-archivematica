@@ -295,7 +295,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
         ET.SubElement(root, 'hasIsolatedTriangle').text = str(has_isolated_triangle(triangles)).lower()
         ET.SubElement(root, 'hasNegativeVertexCoordinates').text = str(has_negative_vertex_coordinates).lower()
-        ET.SubElement(root, 'hasName').text = str(model_name and len(model_name.strip()) > 0).lower()
+        ET.SubElement(root, 'hasModelName').text = str(model_name and len(model_name.strip()) > 0).lower()
 
 
         # Convert ElementTree to minidom document for CDATA support
