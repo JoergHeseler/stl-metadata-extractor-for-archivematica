@@ -57,12 +57,12 @@ def normalize_vector(v):
 def are_vectors_close(v1, v2, tol=1e-9):
     return all(abs(a - b) <= tol for a, b in zip(v1, v2))
 
-def is_facet_oriented_correctly(vertex1, vertex2, vertex3, normal):
-    edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
-    edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
-    calculated_normal = normalize_vector(cross_product(edge1, edge2))
-    normal = normalize_vector(normal)
-    return are_vectors_close(calculated_normal, normal)
+# def is_facet_oriented_correctly(vertex1, vertex2, vertex3, normal):
+#     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
+#     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
+#     calculated_normal = normalize_vector(cross_product(edge1, edge2))
+#     normal = normalize_vector(normal)
+#     return are_vectors_close(calculated_normal, normal)
 
 def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
@@ -98,7 +98,7 @@ def extract_stl_metadata(file_path):
         model_name = str(lines[0][6:]).lstrip()
         total_facet_count = (len(lines) - 2) // 7
         all_vertex_coordinates_are_positive = True
-        all_facets_normals_are_correct = True
+        # all_facets_normals_are_correct = True
         all_vertices_of_each_facet_are_ordered_clockwise = True
 
         for i in range(total_facet_count):
@@ -110,8 +110,8 @@ def extract_stl_metadata(file_path):
                 if any(coord < 0 for coord in vertex):
                     all_vertex_coordinates_are_positive = False
                 vertices.append(vertex)
-            if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
-                all_facets_normals_are_correct = False
+            # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
+            #     all_facets_normals_are_correct = False
             if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
                 all_vertices_of_each_facet_are_ordered_clockwise = False
 
@@ -153,7 +153,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'totalTriangleCount').text = str(total_facet_count)
         # Validation specific metadata
         ET.SubElement(root, 'allVerticesOfEachFacetAreOrderedClockwise').text = str(all_vertices_of_each_facet_are_ordered_clockwise).lower()
-        ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
+        # ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
         ET.SubElement(root, 'allVertexCoordinatesArePositive').text = str(all_vertex_coordinates_are_positive).lower()
 
         # Convert ElementTree to minidom document for CDATA support
