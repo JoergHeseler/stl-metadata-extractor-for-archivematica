@@ -99,7 +99,7 @@ def extract_stl_metadata(file_path):
         total_facet_count = (len(lines) - 2) // 7
         all_vertex_coordinates_are_positive = True
         all_facets_normals_are_correct = True
-        all_vertices_of_facets_are_ordered_clockwise = True
+        all_vertices_of_each_facet_are_ordered_clockwise = True
 
         for i in range(total_facet_count):
             y = i * 7 + 1
@@ -113,7 +113,7 @@ def extract_stl_metadata(file_path):
             if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
                 all_facets_normals_are_correct = False
             if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
-                all_vertices_of_facets_are_ordered_clockwise = False
+                all_vertices_of_each_facet_are_ordered_clockwise = False
 
 
         file_size = os.path.getsize(file_path)
@@ -149,9 +149,10 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'creationDate').text = creation_date
         ET.SubElement(root, 'modificationDate').text = modification_date
         # 3D metadata
+        ET.SubElement(root, 'modelName').text = str(model_name)
         ET.SubElement(root, 'totalTriangleCount').text = str(total_facet_count)
         # Validation specific metadata
-        ET.SubElement(root, 'allVerticesOfFacetsAreOrderedClockwise').text = str(all_vertices_of_facets_are_ordered_clockwise).lower()
+        ET.SubElement(root, 'allVerticesOfEachFacetAreOrderedClockwise').text = str(all_vertices_of_each_facet_are_ordered_clockwise).lower()
         ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
         ET.SubElement(root, 'allVertexCoordinatesArePositive').text = str(all_vertex_coordinates_are_positive).lower()
 
