@@ -33,6 +33,8 @@ def calculate_checksum(file_path, algorithm='sha256'):
             hash_func.update(chunk)
     return hash_func.hexdigest()
 
+######################## GEOMETRY FUNCTIONS ########################
+
 def dot_product(v1, v2):
     return sum(x * y for x, y in zip(v1, v2))
 
@@ -55,14 +57,6 @@ def normalize_vector(v):
 def are_vectors_close(v1, v2, tol=1e-9):
     return all(abs(a - b) <= tol for a, b in zip(v1, v2))
 
-def angle_with_z_axis(normal):
-    z_axis = [0, 0, 1]
-    dot_prod = dot_product(normal, z_axis)
-    normal_magnitude = vector_magnitude(normal)
-    cos_theta = dot_prod / normal_magnitude
-    angle_radians = math.acos(cos_theta)
-    return math.degrees(angle_radians)
-
 def is_facet_oriented_correctly(vertex1, vertex2, vertex3, normal):
     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
@@ -77,6 +71,8 @@ def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
     if dot_product(calculated_normal, normal) < 0:
         vertex2, vertex3 = vertex3, vertex2
     return vertex1, vertex2, vertex3
+
+######################## /GEOMETRY FUNCTIONS ########################
 
 class STLValidatorException(Exception):
     def __init__(self, result):
@@ -99,12 +95,11 @@ def extract_stl_metadata(file_path):
         if not lines[0].startswith("solid"):
             print_error("File does not start with 'solid'.")
 
-        model_name = str(lines[0][6:]).lstrip()        
+        model_name = str(lines[0][6:]).lstrip()
         total_facet_count = (len(lines) - 2) // 7
         all_vertex_coordinates_are_positive = True
         all_facets_normals_are_correct = True
         all_vertices_of_facets_are_ordered_clockwise = True
-        triangles = []
 
         for i in range(total_facet_count):
             y = i * 7 + 1
@@ -115,7 +110,6 @@ def extract_stl_metadata(file_path):
                 if any(coord < 0 for coord in vertex):
                     all_vertex_coordinates_are_positive = False
                 vertices.append(vertex)
-            triangles.append(vertices)
             if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
                 all_facets_normals_are_correct = False
             if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
