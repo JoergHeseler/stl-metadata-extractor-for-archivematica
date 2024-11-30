@@ -40,7 +40,7 @@ Valid files should pass characterization with this script and return error code 
 
 ### In the command line prompt:
 
-You can use the validator at the command line prompt by typing `python stl-metadata-extractor.py --file-full-name=<filename>`.
+You can use the validator at the command line prompt by typing `python stl-metadata-extractor.py --file-full-name=<STL file to characterize>`.
 
 ### Example
 
