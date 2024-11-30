@@ -36,6 +36,10 @@ You can view the error codes and detailed characterization results in the Archiv
 
 Valid files should pass characterization with this script and return error code **0**. However, files containing errors should fail characterization and either return error code **1** or **255**.
 
+### Usage at the command line prompt
+
+You can use the validator at the command line prompt by typing `python <filename>`. The additional parameter `--details` will print more detailed warning information.
+
 ### Example
 
 If you use this script to characterize the ASCII STL model [`cube-stl-ascii-valid.stl`](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/blob/main/stl/cube-stl-ascii-valid.stl), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
