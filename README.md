@@ -57,7 +57,6 @@ If you use this script to characterize the ASCII STL model [`cube-stl-ascii-vali
     <modelName/>
     <totalTriangleCount>12</totalTriangleCount>
     <allVerticesOfEachFacetAreOrderedClockwise>true</allVerticesOfEachFacetAreOrderedClockwise>
-    <allFacetNormalsAreCorrect>true</allFacetNormalsAreCorrect>
     <allVertexCoordinatesArePositive>false</allVertexCoordinatesArePositive>
 </STLMetadataExtractor>
 ```
