@@ -94,7 +94,7 @@ def print_error(message):
 def extract_stl_metadata(file_path):
     try:
         with open(file_path, 'r') as file:
-            lines = [re.sub(r'\s+', ' ' , line.strip()) for line in file.readlines()]
+            lines = [re.sub(r'\s+', ' ' , line.strip()) for line in file.readlines() if line.strip()]
         
         if not lines[0].startswith("solid"):
             print_error("File does not start with 'solid'.")
