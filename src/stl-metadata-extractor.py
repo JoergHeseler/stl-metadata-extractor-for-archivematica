@@ -15,23 +15,11 @@ import sys
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import math
+import struct
 
 SUCCESS_CODE = 0
 ERROR_CODE = 1
 DEBUG = 1
-
-def get_target_file_name_from_arguments():
-    for arg in sys.argv:
-        if arg.startswith("--file-full-name="):
-            return arg.split("=", 1)[1]
-    return None
-
-def calculate_checksum(file_path, algorithm='sha256'):
-    hash_func = hashlib.new(algorithm)
-    with open(file_path, 'rb') as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            hash_func.update(chunk)
-    return hash_func.hexdigest()
 
 ######################## GEOMETRY FUNCTIONS ########################
 
@@ -72,13 +60,93 @@ def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
         vertex2, vertex3 = vertex3, vertex2
     return vertex1, vertex2, vertex3
 
-######################## /GEOMETRY FUNCTIONS ########################
+######################## STL FUNCTIONS ########################
 
-class STLValidatorException(Exception):
-    def __init__(self, result):
-        super().__init__(result)
-        if DEBUG:
-            print(result)
+def is_binary_stl(file_path):
+    # Check if the STL file is binary or ASCII.
+    with open(file_path, 'rb') as file:
+        file_size = os.path.getsize(file_path)
+        file.read(80).decode('ascii', errors='ignore')
+        triangle_count = struct.unpack('<I', file.read(4))[0]
+        return 80 + 4 + 50 * triangle_count == file_size
+
+def extract_binary_stl_metadata(file_path):
+    # Extract metadata from a binary STL file.
+    with open(file_path, 'rb') as file:
+        header = file.read(80).decode('ascii', errors='ignore').strip()
+        model_name = re.sub(r'[^\x20-\x7E]', '', header)
+        triangle_count = struct.unpack('<I', file.read(4))[0]
+        all_vertex_coordinates_are_positive = True
+        all_vertices_of_each_facet_are_ordered_clockwise = True
+
+        for _ in range(triangle_count):
+            data = struct.unpack('<12fH', file.read(50)) # Normal vector (3 floats), vertices (9 floats), attribute byte count
+            normal = data[0:3]
+            vertex1 = data[3:6]
+            vertex2 = data[6:9]
+            vertex3 = data[9:12]
+            vertices = data[3:12] # Skip normal vector
+            if not ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
+                all_vertices_of_each_facet_are_ordered_clockwise = False
+            if any(v < 0 for v in vertices):
+                all_vertex_coordinates_are_positive = False
+
+    return {
+        "model_name": model_name,
+        "total_triangle_count": triangle_count,
+        "all_vertex_coordinates_are_positive": all_vertex_coordinates_are_positive,
+        "all_vertices_of_each_facet_are_ordered_clockwise": all_vertices_of_each_facet_are_ordered_clockwise
+    }
+
+def extract_ascii_stl_metadata(file_path):
+    # Extract metadata from an ascii STL file.
+    with open(file_path, 'r') as file:
+        lines = [re.sub(r'\s+', ' ' , line.strip()) for line in file.readlines() if line.strip()]
+    
+    if not lines[0].startswith("solid"):
+        print_error("File does not start with 'solid'.")
+
+    model_name = str(lines[0][6:]).lstrip()
+    total_facet_count = (len(lines) - 2) // 7
+    all_vertex_coordinates_are_positive = True
+    # all_facets_normals_are_correct = True
+    all_vertices_of_each_facet_are_ordered_clockwise = True
+
+    for i in range(total_facet_count):
+        y = i * 7 + 1
+        normal = list(map(float, lines[y].split()[2:]))
+        vertices = []
+        for j in range(3):
+            vertex = list(map(float, lines[y + 2 + j].split()[1:]))
+            if any(coord < 0 for coord in vertex):
+                all_vertex_coordinates_are_positive = False
+            vertices.append(vertex)
+        # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
+        #     all_facets_normals_are_correct = False
+        if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
+            all_vertices_of_each_facet_are_ordered_clockwise = False
+
+    return {
+        "model_name": model_name,
+        "total_triangle_count": total_facet_count,
+        "all_vertex_coordinates_are_positive": all_vertex_coordinates_are_positive,
+        "all_vertices_of_each_facet_are_ordered_clockwise": all_vertices_of_each_facet_are_ordered_clockwise
+    }
+
+######################## COMMON METDATA EXTRACTOR FUNCTIONS ######################## 
+
+def get_target_file_name_from_arguments():
+    for arg in sys.argv:
+        if arg.startswith("--file-full-name="):
+            return arg.split("=", 1)[1]
+    return None
+
+def calculate_checksum(file_path, algorithm='sha256'):
+    hash_func = hashlib.new(algorithm)
+    with open(file_path, 'rb') as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            hash_func.update(chunk)
+    return hash_func.hexdigest()
 
 def print_warning(message):
     if DEBUG:
@@ -87,45 +155,28 @@ def print_warning(message):
 def print_error(message):
     raise STLValidatorException(message)
 
+######################## SPECIFIC METDATA EXTRACTOR FUNCTIONS ######################## 
+
+class STLValidatorException(Exception):
+    def __init__(self, result):
+        super().__init__(result)
+        if DEBUG:
+            print(result)
+
 def extract_stl_metadata(file_path):
+    # Main function to extract STL metadata.
     try:
-        with open(file_path, 'r') as file:
-            lines = [re.sub(r'\s+', ' ' , line.strip()) for line in file.readlines() if line.strip()]
-        
-        if not lines[0].startswith("solid"):
-            print_error("File does not start with 'solid'.")
-
-        model_name = str(lines[0][6:]).lstrip()
-        total_facet_count = (len(lines) - 2) // 7
-        all_vertex_coordinates_are_positive = True
-        # all_facets_normals_are_correct = True
-        all_vertices_of_each_facet_are_ordered_clockwise = True
-
-        for i in range(total_facet_count):
-            y = i * 7 + 1
-            normal = list(map(float, lines[y].split()[2:]))
-            vertices = []
-            for j in range(3):
-                vertex = list(map(float, lines[y + 2 + j].split()[1:]))
-                if any(coord < 0 for coord in vertex):
-                    all_vertex_coordinates_are_positive = False
-                vertices.append(vertex)
-            # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
-            #     all_facets_normals_are_correct = False
-            if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
-                all_vertices_of_each_facet_are_ordered_clockwise = False
-
+        if is_binary_stl(file_path):
+            metadata = extract_binary_stl_metadata(file_path)
+            format_name = 'STL (Standard Tessellation Language) Binary'
+        else:
+            metadata = extract_ascii_stl_metadata(file_path)
+            format_name = 'STL (Standard Tessellation Language) ASCII'
 
         file_size = os.path.getsize(file_path)
         checksum = calculate_checksum(file_path)
         creation_date = datetime.utcfromtimestamp(os.path.getctime(file_path)).isoformat()
         modification_date = datetime.utcfromtimestamp(os.path.getmtime(file_path)).isoformat()
-
-        root = ET.Element('STLMetadataExtractor', {
-            'xmlns': "http://nfdi4culture.de/stl-metadata-extractor1",
-            'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
-            'xsi:schemaLocation': "http://nfdi4culture.de/stl-metadata-extractor1 schema_location_url"
-        })
 
         # File metadata
         file_size = os.path.getsize(file_path)
@@ -142,19 +193,19 @@ def extract_stl_metadata(file_path):
         })
 
         # Create XML tree
-        ET.SubElement(root, 'formatName').text = 'STL'
+        ET.SubElement(root, 'formatName').text = format_name
         # ET.SubElement(root, 'formatVersion').text = ?
         ET.SubElement(root, 'size').text = str(file_size)
         ET.SubElement(root, 'SHA256Checksum').text = checksum
         ET.SubElement(root, 'creationDate').text = creation_date
         ET.SubElement(root, 'modificationDate').text = modification_date
         # 3D metadata
-        ET.SubElement(root, 'modelName').text = str(model_name)
-        ET.SubElement(root, 'totalTriangleCount').text = str(total_facet_count)
+        ET.SubElement(root, 'modelName').text = metadata.get("model_name")
+        ET.SubElement(root, 'totalTriangleCount').text = str(metadata["total_triangle_count"])
         # Validation specific metadata
-        ET.SubElement(root, 'allVerticesOfEachFacetAreOrderedClockwise').text = str(all_vertices_of_each_facet_are_ordered_clockwise).lower()
+        ET.SubElement(root, 'allVerticesOfEachFacetAreOrderedClockwise').text =  str(metadata["all_vertices_of_each_facet_are_ordered_clockwise"]).lower()
         # ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
-        ET.SubElement(root, 'allVertexCoordinatesArePositive').text = str(all_vertex_coordinates_are_positive).lower()
+        ET.SubElement(root, 'allVertexCoordinatesArePositive').text = str(metadata["all_vertex_coordinates_are_positive"]).lower()
 
         # Convert ElementTree to minidom document for CDATA support
         xml_str = ET.tostring(root, encoding='utf-8')
