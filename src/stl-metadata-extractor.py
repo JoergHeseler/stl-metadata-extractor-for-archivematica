@@ -219,6 +219,8 @@ def extract_stl_metadata(file_path):
         print(json.dumps({"eventOutcomeInformation": "fail", "eventOutcomeDetailNote": str(e)}), file=sys.stderr)
         return ERROR_CODE
 
+######################## MAIN FUNCTION ########################
+
 if __name__ == '__main__':
     target = get_target_file_name_from_arguments()
     if not target:
