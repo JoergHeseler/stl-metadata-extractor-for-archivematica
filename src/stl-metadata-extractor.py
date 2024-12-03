@@ -199,7 +199,7 @@ def extract_stl_metadata(file_path):
         })
 
         # Create XML tree
-        ET.SubElement(root, 'formatName').text = 'STL'
+        ET.SubElement(root, 'formatName').text = 'STL (Standard Tessellation Language)'
         ET.SubElement(root, 'formatVersion').text = format_version
         ET.SubElement(root, 'size').text = str(file_size)
         ET.SubElement(root, 'SHA256Checksum').text = checksum
