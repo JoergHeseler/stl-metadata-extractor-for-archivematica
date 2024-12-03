@@ -52,13 +52,19 @@ def are_vectors_close(v1, v2, tol=1e-9):
 #     normal = normalize_vector(normal)
 #     return are_vectors_close(calculated_normal, normal)
 
-def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
+# def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
+#     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
+#     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
+#     calculated_normal = cross_product(edge1, edge2)
+#     if dot_product(calculated_normal, normal) < 0:
+#         vertex2, vertex3 = vertex3, vertex2
+#     return vertex1, vertex2, vertex3
+
+def is_counterclockwise(vertex1, vertex2, vertex3, normal):
     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
     calculated_normal = cross_product(edge1, edge2)
-    if dot_product(calculated_normal, normal) < 0:
-        vertex2, vertex3 = vertex3, vertex2
-    return vertex1, vertex2, vertex3
+    return dot_product(calculated_normal, normal) > 0
 
 ######################## STL FUNCTIONS ########################
 
@@ -86,7 +92,7 @@ def extract_binary_stl_metadata(file_path):
             vertex2 = data[6:9]
             vertex3 = data[9:12]
             vertices = data[3:12] # Skip normal vector
-            if not ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
+            if not is_counterclockwise(vertex1, vertex2, vertex3, normal):
                 has_valid_counterclockwise_vertices = False
             if any(v < 0 for v in vertices):
                 has_valid_positive_vertice_coordinates = False
@@ -123,7 +129,7 @@ def extract_ascii_stl_metadata(file_path):
             vertices.append(vertex)
         # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
         #     has_valid_facet_normals = False
-        if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
+        if not is_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
             has_valid_counterclockwise_vertices = False
 
     return {
