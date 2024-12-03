@@ -58,7 +58,7 @@ If you use this script to characterize the ASCII STL model [`cube-stl-ascii-vali
 ```xml
 <?xml version="1.0" ?>
 <STLMetadataExtractor xmlns="http://nfdi4culture.de/stl-metadata-extractor1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd">
-    <formatName>STL</formatName>
+    <formatName>STL (Standard Tessellation Language)</formatName>
     <formatVersion>ASCII</formatVersion>
     <size>1212</size>
     <SHA256Checksum>c9ff361dbf38bd54167afe4aeb5bf08a090fbde3bc1ea9ad6b26b9c1bc33472b</SHA256Checksum>
