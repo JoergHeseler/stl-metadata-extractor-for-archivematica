@@ -37,9 +37,9 @@
                         <xs:documentation>Timestamp of the last modification of the STL file.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="modelName" type="xs:string">
+                <xs:element name="solidName" type="xs:string">
                     <xs:annotation>
-                        <xs:documentation>Internal model name of the 3D model.</xs:documentation>
+                        <xs:documentation>Name followed by the solid tag. Usually this is the name of the 3D model.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element name="totalTriangleCount" type="xs:integer">
