@@ -109,7 +109,7 @@ def extract_ascii_stl_metadata(file_path):
     solid_name = str(lines[0][6:]).lstrip()
     total_facet_count = (len(lines) - 2) // 7
     has_valid_positive_vertice_coordinates = True
-    # all_facets_normals_are_correct = True
+    # has_valid_facet_normals = True
     has_valid_counterclockwise_vertices = True
 
     for i in range(total_facet_count):
@@ -122,7 +122,7 @@ def extract_ascii_stl_metadata(file_path):
                 has_valid_positive_vertice_coordinates = False
             vertices.append(vertex)
         # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
-        #     all_facets_normals_are_correct = False
+        #     has_valid_facet_normals = False
         if not ensure_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
             has_valid_counterclockwise_vertices = False
 
@@ -204,7 +204,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'totalTriangleCount').text = str(metadata["total_triangle_count"])
         # Validation specific metadata
         ET.SubElement(root, 'hasValidCounterclockwiseVertices').text =  str(metadata["has_valid_counterclockwise_vertices"]).lower()
-        # ET.SubElement(root, 'allFacetNormalsAreCorrect').text = str(all_facets_normals_are_correct).lower()
+        # ET.SubElement(root, 'hasValidFacetNormals').text = str(has_valid_facet_normals).lower()
         ET.SubElement(root, 'hasValidPositiveVerticeCoordinates').text = str(metadata["has_valid_positive_vertice_coordinates"]).lower()
 
         # Convert ElementTree to minidom document for CDATA support
