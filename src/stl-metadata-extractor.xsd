@@ -14,7 +14,12 @@
             <xs:sequence>
                 <xs:element name="formatName" type="xs:string">
                     <xs:annotation>
-                        <xs:documentation>The name of the file format, e.g., STL.</xs:documentation>
+                        <xs:documentation>The name of the file format, i.e. STL.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="formatVersion" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The version of the file format, i.e. either ASCII or binary.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element name="size" type="xs:integer">
@@ -39,7 +44,7 @@
                 </xs:element>
                 <xs:element name="solidName" type="xs:string">
                     <xs:annotation>
-                        <xs:documentation>Name followed by the solid tag. Usually this is the name of the 3D model.</xs:documentation>
+                        <xs:documentation>Name followed by the solid tag, which is usually the title of the 3D model.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element name="totalTriangleCount" type="xs:integer">
@@ -52,7 +57,7 @@
                         <xs:documentation>Indicates whether all vertices of each facet are ordered clockwise.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <!-- <xs:element name="allFacetNormalsAreCorrect" type="xs:boolean">
+                <!-- <xs:element name="hasValidFacetNormals" type="xs:boolean">
                     <xs:annotation>
                         <xs:documentation>Indicates whether all facet normals point in the correct direction.</xs:documentation>
                     </xs:annotation>
