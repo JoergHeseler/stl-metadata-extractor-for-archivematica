@@ -66,8 +66,8 @@ If you use this script to characterize the ASCII STL model [`cube-stl-ascii-vali
     <modificationDate>2024-11-30T10:48:43.857527</modificationDate>
     <solidName/>
     <totalTriangleCount>12</totalTriangleCount>
-    <allVerticesOfEachFacetAreOrderedClockwise>true</allVerticesOfEachFacetAreOrderedClockwise>
-    <allVertexCoordinatesArePositive>false</allVertexCoordinatesArePositive>
+    <hasValidCounterclockwiseVertices>true</hasValidCounterclockwiseVertices>
+    <hasValidPositiveVerticeCoordinates>false</hasValidPositiveVerticeCoordinates>
 </STLMetadataExtractor>
 ```
 
