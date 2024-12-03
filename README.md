@@ -63,7 +63,7 @@ If you use this script to characterize the ASCII STL model [`cube-stl-ascii-vali
     <SHA256Checksum>c9ff361dbf38bd54167afe4aeb5bf08a090fbde3bc1ea9ad6b26b9c1bc33472b</SHA256Checksum>
     <creationDate>2024-11-30T10:48:43.569899</creationDate>
     <modificationDate>2024-11-30T10:48:43.857527</modificationDate>
-    <modelName/>
+    <solidName/>
     <totalTriangleCount>12</totalTriangleCount>
     <allVerticesOfEachFacetAreOrderedClockwise>true</allVerticesOfEachFacetAreOrderedClockwise>
     <allVertexCoordinatesArePositive>false</allVertexCoordinatesArePositive>
