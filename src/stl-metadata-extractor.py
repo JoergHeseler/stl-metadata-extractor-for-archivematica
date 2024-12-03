@@ -168,10 +168,10 @@ def extract_stl_metadata(file_path):
     try:
         if is_binary_stl(file_path):
             metadata = extract_binary_stl_metadata(file_path)
-            format_name = 'STL (Standard Tessellation Language) Binary'
+            format_version = 'binary'
         else:
             metadata = extract_ascii_stl_metadata(file_path)
-            format_name = 'STL (Standard Tessellation Language) ASCII'
+            format_version = 'ASCII'
 
         file_size = os.path.getsize(file_path)
         checksum = calculate_checksum(file_path)
@@ -193,8 +193,8 @@ def extract_stl_metadata(file_path):
         })
 
         # Create XML tree
-        ET.SubElement(root, 'formatName').text = format_name
-        # ET.SubElement(root, 'formatVersion').text = ?
+        ET.SubElement(root, 'formatName').text = 'STL'
+        ET.SubElement(root, 'formatVersion').text = format_version
         ET.SubElement(root, 'size').text = str(file_size)
         ET.SubElement(root, 'SHA256Checksum').text = checksum
         ET.SubElement(root, 'creationDate').text = creation_date
