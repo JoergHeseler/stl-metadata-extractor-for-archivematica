@@ -74,7 +74,7 @@ def extract_binary_stl_metadata(file_path):
     # Extract metadata from a binary STL file.
     with open(file_path, 'rb') as file:
         header = file.read(80).decode('ascii', errors='ignore').strip()
-        model_name = re.sub(r'[^\x20-\x7E]', '', header)
+        solid_name = re.sub(r'[^\x20-\x7E]', '', header)
         triangle_count = struct.unpack('<I', file.read(4))[0]
         all_vertex_coordinates_are_positive = True
         all_vertices_of_each_facet_are_ordered_clockwise = True
@@ -92,7 +92,7 @@ def extract_binary_stl_metadata(file_path):
                 all_vertex_coordinates_are_positive = False
 
     return {
-        "model_name": model_name,
+        "solid_name": solid_name,
         "total_triangle_count": triangle_count,
         "all_vertex_coordinates_are_positive": all_vertex_coordinates_are_positive,
         "all_vertices_of_each_facet_are_ordered_clockwise": all_vertices_of_each_facet_are_ordered_clockwise
@@ -106,7 +106,7 @@ def extract_ascii_stl_metadata(file_path):
     if not lines[0].startswith("solid"):
         print_error("File does not start with 'solid'.")
 
-    model_name = str(lines[0][6:]).lstrip()
+    solid_name = str(lines[0][6:]).lstrip()
     total_facet_count = (len(lines) - 2) // 7
     all_vertex_coordinates_are_positive = True
     # all_facets_normals_are_correct = True
@@ -127,7 +127,7 @@ def extract_ascii_stl_metadata(file_path):
             all_vertices_of_each_facet_are_ordered_clockwise = False
 
     return {
-        "model_name": model_name,
+        "solid_name": solid_name,
         "total_triangle_count": total_facet_count,
         "all_vertex_coordinates_are_positive": all_vertex_coordinates_are_positive,
         "all_vertices_of_each_facet_are_ordered_clockwise": all_vertices_of_each_facet_are_ordered_clockwise
@@ -200,7 +200,7 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'creationDate').text = creation_date
         ET.SubElement(root, 'modificationDate').text = modification_date
         # 3D metadata
-        ET.SubElement(root, 'modelName').text = metadata.get("model_name")
+        ET.SubElement(root, 'solidName').text = metadata.get("solid_name")
         ET.SubElement(root, 'totalTriangleCount').text = str(metadata["total_triangle_count"])
         # Validation specific metadata
         ET.SubElement(root, 'allVerticesOfEachFacetAreOrderedClockwise').text =  str(metadata["all_vertices_of_each_facet_are_ordered_clockwise"]).lower()
