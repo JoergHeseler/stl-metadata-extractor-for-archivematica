@@ -47,7 +47,7 @@ You can view the error codes and detailed characterization results in the Archiv
 
 Valid files should pass characterization with this script and return error code **0**. However, files containing errors should fail characterization and either return error code **1** or **255**.
 
-### In the command line prompt:
+### In the command line:
 
 You can use the validator at the command line prompt by typing `python stl-metadata-extractor.py --file-full-name=<STL file to characterize>`.
 
