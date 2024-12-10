@@ -73,7 +73,10 @@ def is_binary_stl(file_path):
     with open(file_path, 'rb') as file:
         file_size = os.path.getsize(file_path)
         file.read(80).decode('ascii', errors='ignore')
-        triangle_count = struct.unpack('<I', file.read(4))[0]
+        try:
+            triangle_count = struct.unpack('<I', file.read(4))[0]
+        except struct.error:
+            return False
         return 80 + 4 + 50 * triangle_count == file_size
 
 def extract_binary_stl_metadata(file_path):
