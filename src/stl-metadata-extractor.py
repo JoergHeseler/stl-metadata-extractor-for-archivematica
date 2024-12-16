@@ -148,7 +148,7 @@ def get_target_file_name_from_arguments():
     for arg in sys.argv:
         if arg.startswith("--file-full-name="):
             return arg.split("=", 1)[1]
-    return None
+    return sys.argv[1]
 
 def calculate_checksum(file_path, algorithm='sha256'):
     hash_func = hashlib.new(algorithm)
@@ -232,7 +232,4 @@ def extract_stl_metadata(file_path):
 
 if __name__ == '__main__':
     target = get_target_file_name_from_arguments()
-    if not target:
-        print("No argument with --file-full-name= found.", file=sys.stderr)
-    else:
-        sys.exit(extract_stl_metadata(target))
+    sys.exit(extract_stl_metadata(target))
