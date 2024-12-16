@@ -2,7 +2,7 @@
 # Version: 1.0.0
 # Publisher: NFDI4Culture
 # Publication date: December 5, 2024
-# License: CC BY 4.0
+# License: CC BY-SA 4.0
 # Author: Joerg Heseler
 # References: https://www.fabbers.com/tech/STL_Format#Sct_specs
 
