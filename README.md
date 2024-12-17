@@ -53,21 +53,21 @@ You can use the validator at the command line prompt by typing `python stl-metad
 
 ### Example
 
-If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-valid.stl`](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/blob/main/stl/cockatoo-stl-ascii-valid/cockatoo-stl-ascii-valid.stl), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
+If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-cleaned-valid.stl`](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/blob/main/stl/cockatoo-stl-ascii-cleaned-valid/cockatoo-stl-ascii-cleaned-valid.stl), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
 
 ```xml
 <?xml version="1.0" ?>
 <STLMetadataExtractor xmlns="http://nfdi4culture.de/stl-metadata-extractor1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd">
     <formatName>STL (Standard Tessellation Language)</formatName>
     <formatVersion>ASCII</formatVersion>
-    <size>149392856</size>
-    <SHA256Checksum>6f93dd43857abfdfcad2f6c6e958213bbb52e5a2005c903f0ced92fbe6bd338a</SHA256Checksum>
-    <creationDate>2024-12-13T13:37:19.261605</creationDate>
-    <modificationDate>2024-12-13T13:37:19.297967</modificationDate>
-    <solidName/>
+    <size>189601502</size>
+    <SHA256Checksum>e9745c60c21acc8c94a84acba07f8ee0bab3d6f5ce967fc87bca02817e04aea3</SHA256Checksum>
+    <creationDate>2024-12-17T15:28:09.235579</creationDate>
+    <modificationDate>2024-12-17T15:37:37.040125</modificationDate>
+    <solidName>model</solidName>
     <totalTriangleCount>776822</totalTriangleCount>
     <hasValidCounterclockwiseVertices>true</hasValidCounterclockwiseVertices>
-    <hasValidPositiveVerticeCoordinates>false</hasValidPositiveVerticeCoordinates>
+    <hasValidPositiveVerticeCoordinates>true</hasValidPositiveVerticeCoordinates>
 </STLMetadataExtractor>
 ```
 
