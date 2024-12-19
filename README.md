@@ -68,6 +68,8 @@ If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-
     <totalTriangleCount>776822</totalTriangleCount>
     <hasValidCounterclockwiseVertices>true</hasValidCounterclockwiseVertices>
     <hasValidPositiveVerticeCoordinates>true</hasValidPositiveVerticeCoordinates>
+    <hasValidNormals>true</hasValidNormals>
+    <hasValidManifoldEdges>false</hasValidManifoldEdges>
 </STLMetadataExtractor>
 ```
 
