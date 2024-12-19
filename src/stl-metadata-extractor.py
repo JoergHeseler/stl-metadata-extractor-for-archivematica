@@ -42,7 +42,16 @@ def normalize_vector(v):
         return [0, 0, 0]
     return [x / magnitude for x in v]
 
-def are_vectors_close(v1, v2, tol=1e-9):
+# New feature: Recalculate facet normal if invalid
+def recalculate_normal(vertex1, vertex2, vertex3):
+    """
+    Recalculates the normal vector for a given facet using the cross product.
+    """
+    edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
+    edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
+    return normalize_vector(cross_product(edge1, edge2))
+
+def are_vectors_close(v1, v2, tol=1e-3):
     return all(abs(a - b) <= tol for a, b in zip(v1, v2))
 
 # def is_facet_oriented_correctly(vertex1, vertex2, vertex3, normal):
@@ -66,6 +75,30 @@ def is_counterclockwise(vertex1, vertex2, vertex3, normal):
     calculated_normal = cross_product(edge1, edge2)
     return dot_product(calculated_normal, normal) > 0
 
+# New feature: Detect non-manifold geometry
+def count_shared_edges_optimized(facets):
+    """
+    Optimized detection of shared edges between facets using a hash table.
+    """
+    edge_count = {}
+    for facet in facets:
+        # Extract edges as sorted tuples to ensure consistent order
+        edges = [
+            tuple(sorted((tuple(facet[1]), tuple(facet[2])))),
+            tuple(sorted((tuple(facet[2]), tuple(facet[3])))),
+            tuple(sorted((tuple(facet[3]), tuple(facet[1]))))
+        ]
+        for edge in edges:
+            if edge in edge_count:
+                edge_count[edge] += 1
+            else:
+                edge_count[edge] = 1
+
+    # Count edges shared by more than two facets (non-manifold)
+    non_manifold_edges = [edge for edge, count in edge_count.items() if count > 2]
+    return len(non_manifold_edges), non_manifold_edges
+
+
 ######################## STL FUNCTIONS ########################
 
 def is_binary_stl(file_path):
@@ -87,6 +120,10 @@ def extract_binary_stl_metadata(file_path):
         triangle_count = struct.unpack('<I', file.read(4))[0]
         has_valid_positive_vertice_coordinates = True
         has_valid_counterclockwise_vertices = True
+        has_valid_normals = True
+        has_valid_manifold_edges = True
+
+        facets = []
 
         for _ in range(triangle_count):
             data = struct.unpack('<12fH', file.read(50)) # Normal vector (3 floats), vertices (9 floats), attribute byte count
@@ -99,12 +136,28 @@ def extract_binary_stl_metadata(file_path):
                 has_valid_counterclockwise_vertices = False
             if any(v < 0 for v in vertices):
                 has_valid_positive_vertice_coordinates = False
+            # Validate normals
+            recalculated_normal = recalculate_normal(vertex1, vertex2, vertex3)
+            if not are_vectors_close(normal, recalculated_normal):
+                normal = recalculated_normal # Fix invalid normals
+                has_valid_normals = False
+            
+            facets.append([normal, vertex1, vertex2, vertex3])
+
+
+        # Optimized non-manifold detection
+        non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
+        if non_manifold_count > 0:
+            has_valid_manifold_edges = False
+
 
     return {
         "solid_name": solid_name,
         "total_triangle_count": triangle_count,
         "has_valid_positive_vertice_coordinates": has_valid_positive_vertice_coordinates,
-        "has_valid_counterclockwise_vertices": has_valid_counterclockwise_vertices
+        "has_valid_counterclockwise_vertices": has_valid_counterclockwise_vertices,
+        "has_valid_normals": has_valid_normals,
+        "has_valid_manifold_edges" : has_valid_manifold_edges
     }
 
 def extract_ascii_stl_metadata(file_path):
@@ -118,8 +171,11 @@ def extract_ascii_stl_metadata(file_path):
     solid_name = str(lines[0][6:]).lstrip()
     total_facet_count = (len(lines) - 2) // 7
     has_valid_positive_vertice_coordinates = True
-    # has_valid_facet_normals = True
     has_valid_counterclockwise_vertices = True
+    has_valid_normals = True
+    has_valid_manifold_edges = True
+
+    facets = []
 
     for i in range(total_facet_count):
         y = i * 7 + 1
@@ -130,16 +186,29 @@ def extract_ascii_stl_metadata(file_path):
             if any(coord < 0 for coord in vertex):
                 has_valid_positive_vertice_coordinates = False
             vertices.append(vertex)
-        # if not is_facet_oriented_correctly(vertices[0], vertices[1], vertices[2], normal):
-        #     has_valid_facet_normals = False
         if not is_counterclockwise(vertices[0], vertices[1], vertices[2], normal):
             has_valid_counterclockwise_vertices = False
+        # Validate normals
+        recalculated_normal = recalculate_normal(vertices[0], vertices[1], vertices[2])
+        if not are_vectors_close(normal, recalculated_normal):
+            normal = recalculated_normal # Fix invalid normals
+            has_valid_normals = False
+
+        facets.append([normal, vertices[0], vertices[1], vertices[2]])
+
+    # Optimized non-manifold detection
+    non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
+    if non_manifold_count > 0:
+        has_valid_manifold_edges = False
+
 
     return {
         "solid_name": solid_name,
         "total_triangle_count": total_facet_count,
         "has_valid_positive_vertice_coordinates": has_valid_positive_vertice_coordinates,
-        "has_valid_counterclockwise_vertices": has_valid_counterclockwise_vertices
+        "has_valid_counterclockwise_vertices": has_valid_counterclockwise_vertices,
+        "has_valid_normals": has_valid_normals,
+        "has_valid_manifold_edges" : has_valid_manifold_edges
     }
 
 ######################## COMMON METDATA EXTRACTOR FUNCTIONS ######################## 
@@ -213,8 +282,9 @@ def extract_stl_metadata(file_path):
         ET.SubElement(root, 'totalTriangleCount').text = str(metadata["total_triangle_count"])
         # Validation specific metadata
         ET.SubElement(root, 'hasValidCounterclockwiseVertices').text =  str(metadata["has_valid_counterclockwise_vertices"]).lower()
-        # ET.SubElement(root, 'hasValidFacetNormals').text = str(has_valid_facet_normals).lower()
         ET.SubElement(root, 'hasValidPositiveVerticeCoordinates').text = str(metadata["has_valid_positive_vertice_coordinates"]).lower()
+        ET.SubElement(root, 'hasValidNormals').text = str(metadata["has_valid_normals"]).lower()
+        ET.SubElement(root, 'hasValidManifoldEdges').text = str(metadata["has_valid_manifold_edges"]).lower()
 
         # Convert ElementTree to minidom document for CDATA support
         xml_str = ET.tostring(root, encoding='utf-8')
