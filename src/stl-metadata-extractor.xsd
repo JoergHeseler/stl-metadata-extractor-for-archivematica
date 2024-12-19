@@ -67,6 +67,16 @@
                         <xs:documentation>Indicates whether all vertex coordinates are positive or zero.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
+                <xs:element name="hasValidNormals" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>Indicates if all facet normals are valid and correctly oriented.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="hasValidManifoldEdges" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>Indicates if the STL model has valid manifold edges, i.e. all edges are shared by exactly two triangles.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
