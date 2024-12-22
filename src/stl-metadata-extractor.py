@@ -99,6 +99,48 @@ def count_shared_edges_optimized(facets):
     return len(non_manifold_edges), non_manifold_edges
 
 
+def is_model_manifold(facets):
+    """
+    Checks if a 3D model is manifold.
+    A model is manifold if each edge is shared by exactly two triangles.
+    
+    Parameters:
+        facets (list): List of facets, where each facet is a list of 4 elements:
+                       [normal, vertex1, vertex2, vertex3].
+    
+    Returns:
+        bool: True if the model is manifold, False otherwise.
+        dict: A report containing details about non-manifold edges, if any.
+    """
+    edge_usage = {}
+
+    # Step 1: Count usage of each edge
+    for facet in facets:
+        edges = [
+            tuple(sorted((tuple(facet[1]), tuple(facet[2])))),
+            tuple(sorted((tuple(facet[2]), tuple(facet[3])))),
+            tuple(sorted((tuple(facet[3]), tuple(facet[1]))))
+        ]
+        for edge in edges:
+            if edge in edge_usage:
+                edge_usage[edge] += 1
+            else:
+                edge_usage[edge] = 1
+
+    # Step 2: Analyze edge usage
+    non_manifold_edges = {edge: count for edge, count in edge_usage.items() if count != 2}
+    is_manifold = len(non_manifold_edges) == 0
+
+    # # Step 3: Return result
+    # report = {
+    #     "is_manifold": is_manifold,
+    #     "non_manifold_edges": non_manifold_edges,
+    #     "total_edges": len(edge_usage),
+    #     "non_manifold_edge_count": len(non_manifold_edges),
+    # }
+
+    return is_manifold #, report
+
 ######################## STL FUNCTIONS ########################
 
 def is_binary_stl(file_path):
@@ -145,10 +187,13 @@ def extract_binary_stl_metadata(file_path):
             facets.append([normal, vertex1, vertex2, vertex3])
 
 
-        # Optimized non-manifold detection
-        non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
-        if non_manifold_count > 0:
-            has_valid_manifold_edges = False
+        # # Optimized non-manifold detection
+        # non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
+        # if non_manifold_count > 0:
+        #     has_valid_manifold_edges = False
+
+        has_valid_manifold_edges = is_model_manifold(facets)
+
 
 
     return {
@@ -196,10 +241,12 @@ def extract_ascii_stl_metadata(file_path):
 
         facets.append([normal, vertices[0], vertices[1], vertices[2]])
 
-    # Optimized non-manifold detection
-    non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
-    if non_manifold_count > 0:
-        has_valid_manifold_edges = False
+    # # Optimized non-manifold detection
+    # non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
+    # if non_manifold_count > 0:
+    #     has_valid_manifold_edges = False
+
+    has_valid_manifold_edges = is_model_manifold(facets)
 
 
     return {
