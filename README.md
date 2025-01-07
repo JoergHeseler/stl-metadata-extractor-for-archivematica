@@ -60,16 +60,16 @@ If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-
 <STLMetadataExtractor xmlns="http://nfdi4culture.de/stl-metadata-extractor1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nfdi4culture.de/stl-metadata-extractor1 https://raw.githubusercontent.com/JoergHeseler/stl-metadata-extractor-for-archivematica/refs/heads/main/src/stl-metadata-extractor.xsd">
     <formatName>STL (Standard Tessellation Language)</formatName>
     <formatVersion>ASCII</formatVersion>
-    <size>189601502</size>
-    <SHA256Checksum>e9745c60c21acc8c94a84acba07f8ee0bab3d6f5ce967fc87bca02817e04aea3</SHA256Checksum>
+    <size>147813329</size>
+    <SHA256Checksum>5f1df2ec28059413cca395c169b80c105c2f8917503f1a5b6ee8a229895a013d</SHA256Checksum>
     <creationDate>2024-12-17T15:28:09.235579</creationDate>
-    <modificationDate>2024-12-17T15:37:37.040125</modificationDate>
-    <solidName>model</solidName>
-    <totalTriangleCount>776822</totalTriangleCount>
+    <modificationDate>2025-01-07T15:21:30.066997</modificationDate>
+    <solidName/>
+    <totalTriangleCount>776808</totalTriangleCount>
     <hasValidCounterclockwiseVertices>true</hasValidCounterclockwiseVertices>
     <hasValidPositiveVerticeCoordinates>true</hasValidPositiveVerticeCoordinates>
     <hasValidNormals>true</hasValidNormals>
-    <hasValidManifoldEdges>false</hasValidManifoldEdges>
+    <hasValidManifoldEdges>true</hasValidManifoldEdges>
 </STLMetadataExtractor>
 ```
 
