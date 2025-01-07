@@ -76,42 +76,30 @@ def is_counterclockwise(vertex1, vertex2, vertex3, normal):
     return dot_product(calculated_normal, normal) > 0
 
 # New feature: Detect non-manifold geometry
-def count_shared_edges_optimized(facets):
-    """
-    Optimized detection of shared edges between facets using a hash table.
-    """
-    edge_count = {}
-    for facet in facets:
-        # Extract edges as sorted tuples to ensure consistent order
-        edges = [
-            tuple(sorted((tuple(facet[1]), tuple(facet[2])))),
-            tuple(sorted((tuple(facet[2]), tuple(facet[3])))),
-            tuple(sorted((tuple(facet[3]), tuple(facet[1]))))
-        ]
-        for edge in edges:
-            if edge in edge_count:
-                edge_count[edge] += 1
-            else:
-                edge_count[edge] = 1
+# def count_shared_edges_optimized(facets):
+#     """
+#     Optimized detection of shared edges between facets using a hash table.
+#     """
+#     edge_count = {}
+#     for facet in facets:
+#         # Extract edges as sorted tuples to ensure consistent order
+#         edges = [
+#             tuple(sorted((tuple(facet[1]), tuple(facet[2])))),
+#             tuple(sorted((tuple(facet[2]), tuple(facet[3])))),
+#             tuple(sorted((tuple(facet[3]), tuple(facet[1]))))
+#         ]
+#         for edge in edges:
+#             if edge in edge_count:
+#                 edge_count[edge] += 1
+#             else:
+#                 edge_count[edge] = 1
 
-    # Count edges shared by more than two facets (non-manifold)
-    non_manifold_edges = [edge for edge, count in edge_count.items() if count > 2]
-    return len(non_manifold_edges), non_manifold_edges
+#     # Count edges shared by more than two facets (non-manifold)
+#     non_manifold_edges = [edge for edge, count in edge_count.items() if count > 2]
+#     return len(non_manifold_edges), non_manifold_edges
 
 
 def is_model_manifold(facets):
-    """
-    Checks if a 3D model is manifold.
-    A model is manifold if each edge is shared by exactly two triangles.
-    
-    Parameters:
-        facets (list): List of facets, where each facet is a list of 4 elements:
-                       [normal, vertex1, vertex2, vertex3].
-    
-    Returns:
-        bool: True if the model is manifold, False otherwise.
-        dict: A report containing details about non-manifold edges, if any.
-    """
     edge_usage = {}
 
     # Step 1: Count usage of each edge
