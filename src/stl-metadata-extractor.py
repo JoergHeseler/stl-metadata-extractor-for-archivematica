@@ -54,50 +54,11 @@ def recalculate_normal(vertex1, vertex2, vertex3):
 def are_vectors_close(v1, v2, tol=1e-3):
     return all(abs(a - b) <= tol for a, b in zip(v1, v2))
 
-# def is_facet_oriented_correctly(vertex1, vertex2, vertex3, normal):
-#     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
-#     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
-#     calculated_normal = normalize_vector(cross_product(edge1, edge2))
-#     normal = normalize_vector(normal)
-#     return are_vectors_close(calculated_normal, normal)
-
-# def ensure_counterclockwise(vertex1, vertex2, vertex3, normal):
-#     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
-#     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
-#     calculated_normal = cross_product(edge1, edge2)
-#     if dot_product(calculated_normal, normal) < 0:
-#         vertex2, vertex3 = vertex3, vertex2
-#     return vertex1, vertex2, vertex3
-
 def is_counterclockwise(vertex1, vertex2, vertex3, normal):
     edge1 = [v2 - v1 for v1, v2 in zip(vertex1, vertex2)]
     edge2 = [v3 - v1 for v1, v3 in zip(vertex1, vertex3)]
     calculated_normal = cross_product(edge1, edge2)
     return dot_product(calculated_normal, normal) > 0
-
-# New feature: Detect non-manifold geometry
-# def count_shared_edges_optimized(facets):
-#     """
-#     Optimized detection of shared edges between facets using a hash table.
-#     """
-#     edge_count = {}
-#     for facet in facets:
-#         # Extract edges as sorted tuples to ensure consistent order
-#         edges = [
-#             tuple(sorted((tuple(facet[1]), tuple(facet[2])))),
-#             tuple(sorted((tuple(facet[2]), tuple(facet[3])))),
-#             tuple(sorted((tuple(facet[3]), tuple(facet[1]))))
-#         ]
-#         for edge in edges:
-#             if edge in edge_count:
-#                 edge_count[edge] += 1
-#             else:
-#                 edge_count[edge] = 1
-
-#     # Count edges shared by more than two facets (non-manifold)
-#     non_manifold_edges = [edge for edge, count in edge_count.items() if count > 2]
-#     return len(non_manifold_edges), non_manifold_edges
-
 
 def is_model_manifold(facets):
     edge_usage = {}
@@ -175,14 +136,8 @@ def extract_binary_stl_metadata(file_path):
             facets.append([normal, vertex1, vertex2, vertex3])
 
 
-        # # Optimized non-manifold detection
-        # non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
-        # if non_manifold_count > 0:
-        #     has_valid_manifold_edges = False
-
+        # Optimized non-manifold detection
         has_valid_manifold_edges = is_model_manifold(facets)
-
-
 
     return {
         "solid_name": solid_name,
@@ -229,13 +184,8 @@ def extract_ascii_stl_metadata(file_path):
 
         facets.append([normal, vertices[0], vertices[1], vertices[2]])
 
-    # # Optimized non-manifold detection
-    # non_manifold_count, non_manifold_edges = count_shared_edges_optimized(facets)
-    # if non_manifold_count > 0:
-    #     has_valid_manifold_edges = False
-
+    # Optimized non-manifold detection
     has_valid_manifold_edges = is_model_manifold(facets)
-
 
     return {
         "solid_name": solid_name,
