@@ -1,6 +1,6 @@
 # STL Metadata Extractor for Archivematica
 
-This repository provides a script that extracts metadata from ASCII and binary Standard Tessellation Language (STL) files in [Archivematica](https://www.archivematica.org/).
+This repository provides a script that extracts metadata from ASCII and binary Standard Tessellation Language (STL) files in [Archivematica](https://www.archivematica.org/) based on the [specification by Marshall Burns](https://www.fabbers.com/tech/STL_Format).
 
 ## Installation
 
