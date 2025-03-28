@@ -4,7 +4,7 @@
 # Publication date: December 5, 2024
 # License: CC BY-SA 4.0
 # Author: Joerg Heseler
-# References: https://www.fabbers.com/tech/STL_Format#Sct_specs
+# References: https://www.fabbers.com/tech/STL_Format
 
 import hashlib
 import json
