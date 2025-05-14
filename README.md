@@ -53,7 +53,7 @@ You can use the validator at the command line prompt by typing `python stl-metad
 
 ### Example
 
-If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-cleaned-valid.stl`](https://github.com/JoergHeseler/3d-sample-files-for-digital-preservation-testing/blob/main/stl/cockatoo-stl-ascii-cleaned-valid/cockatoo-stl-ascii-cleaned-valid.stl), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
+If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-cleaned-valid.stl`](https://github.com/JoergHeseler/mesh-samples-for-preservation-testing/blob/main/stl/cockatoo-stl-1.0_ascii-manifolded_and_cleaned-valid), the error code **0** should be returned and the following XML content will be included in the AIP's METS document in the <objectCharacteristicsExtension> element of the file:
 
 ```xml
 <?xml version="1.0" ?>
