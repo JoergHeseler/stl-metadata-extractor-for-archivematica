@@ -81,17 +81,9 @@ If you use this script to characterize the ASCII STL model [`cockatoo-stl-ascii-
 
 As part of the [NFDI4Culture](https://nfdi4culture.de/) initiative, efforts are underway to enhance the capabilities of open-source digital preservation software like Archivematica to identify, validate and characterize 3D file formats. This repository provides a script to extract metadata extraction of STL files in Archivematica, enhancing its 3D content preservation capabilities.
 
-## Related projects
+## Related Projects
 
-- [DAE Validator for Archivematica](https://github.com/JoergHeseler/dae-validator-for-archivematica)
-- [glTF Metadata Extractor for Archivematica](https://github.com/JoergHeseler/gltf-metadata-extractor-for-archivematica)
-- [glTF Validator for Archivematica](https://github.com/JoergHeseler/gltf-validator-for-archivematica)
-- [Mesh Samples for Preservation Testing](https://github.com/JoergHeseler/mesh-samples-for-preservation-testing)
-- [Point Cloud Samples for Digital Preservation Testing](https://github.com/JoergHeseler/point-cloud-samples-for-preservation-testing)
-- [Siegfried Falls Back on Fido Identifier for Archivematica](https://github.com/JoergHeseler/siegfried-falls-back-on-fido-identifier-for-archivematica)
-- [STL Cleaner](https://github.com/JoergHeseler/stl-cleaner)
-- [STL Validator for Archivematica](https://github.com/JoergHeseler/stl-validator-for-archivematica)
-- [X3D Validator for Archivematica](https://github.com/JoergHeseler/x3d-validator-for-archivematica)
+- [NFDI4Culture 3D Reference Implementations](https://github.com/JoergHeseler/nfdi4culture-3d-reference-implementations)
 
 ## Contributing
 
